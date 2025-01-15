@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake and Ladder Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-gap: 2px;
+            margin: 20px auto;
+            width: 520px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .player {
+            background-color: yellow;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Snake and Ladder Game</h1>
+    <div id="board"></div>
+    <div id="controls">
+        <button id="rollDice">Roll Dice</button>
+        <p id="diceResult">Dice: </p>
+        <p id="playerPosition">Player Position: 1</p>
+    </div>
+
+    <script>
+        const boardSize = 100;
+        const snakesAndLadders = {
+            3: 22,
+            6: 25,
+            20: 59,
+            57: 96,
+            25: 2,
+            52: 42,
+            70: 55,
+            99: 54
+        };
+        let playerPosition = 1;
+
+        // Create the board
+        const board = document.getElementById('board');
+        for (let i = boardSize; i > 0; i--) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.id = `cell-${i}`;
+            cell.textContent = i;
+            board.appendChild(cell);
+        }
+
+        // Add player token
+        const updatePlayerPosition = () => {
+            document.querySelectorAll('.player').forEach(el => el.remove());
+            const playerCell = document.getElementById(`cell-${playerPosition}`);
+            const playerToken = document.createElement('div');
+            playerToken.classList.add('player');
+            playerCell.appendChild(playerToken);
+        };
+        updatePlayerPosition();
+
+        // Roll dice and move player
+        document.getElementById('rollDice').addEventListener('click', () => {
+            const diceRoll = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('diceResult').textContent = `Dice: ${diceRoll}`;
+
+            let nextPosition = playerPosition + diceRoll;
+            if (nextPosition > boardSize) {
+                alert("Roll too high! Stay on the same position.");
+                return;
+            }
+
+            if (snakesAndLadders[nextPosition]) {
+                const oldPosition = nextPosition;
+                nextPosition = snakesAndLadders[nextPosition];
+                if (nextPosition > oldPosition) {
+                    alert(`You found a ladder! Climb to ${nextPosition}`);
+                } else {
+                    alert(`Oh no, a snake! Slide down to ${nextPosition}`);
+                }
+            }
+
+            playerPosition = nextPosition;
+            updatePlayerPosition();
+
+            document.getElementById('playerPosition').textContent = `Player Position: ${playerPosition}`;
+
+            if (playerPosition === boardSize) {
+                alert("Congratulations! You reached the finish line and won the game!");
+                playerPosition = 1; // Reset the game
+                updatePlayerPosition();
+            }
+        });
+    </script>
+</body>
+</html>
